@@ -1,0 +1,9 @@
+{
+    "name": "Stranger Game",
+    "short_name": "Stranger",
+    "start_url": ".",
+    "display": "standalone",
+    "orientation": "landscape",
+    "background_color": "#1c1c1c",
+    "theme_color": "#1c1c1c"
+  }

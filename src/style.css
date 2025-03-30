@@ -1,0 +1,24 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background-color: #1c1c1c;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-wrapper canvas {
+  display: block;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: none;
+  width: 100% !important;
+  height: 100% !important;
+  image-rendering: pixelated;
+
+}
