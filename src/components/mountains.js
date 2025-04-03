@@ -9,7 +9,7 @@ Crafty.c("Mountains", {
 
         this.bind("EnterFrame", function () {
             if (window.gameStart) {
-                this.x -= this.speed;
+                this.x = Math.round(this.x - this.speed);
 
                 if (this.x + this.w <= 0) {
                     this.x = this.w;

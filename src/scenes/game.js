@@ -1,7 +1,9 @@
 import "../components/ground.js";
 import "../components/mountains.js";
+import "../components/floor.js";
 import "../components/cloud.js";
 import "../components/bird.js";
+import "../components/pole.js";
 import "../components/controller.js";
 
 Crafty.scene("Game", function() {
@@ -11,10 +13,10 @@ Crafty.scene("Game", function() {
     const gameHeight = 180;
     const gameWidth = 320;
     window.gameStart = false;
+    window.obstacleGeneration = false;
 
     Crafty.sprite("./assets/ground.png", { ground: [0, 0, 320, 71]});
     Crafty.sprite("./assets/mountains.png", { mountains: [0, 0, 320, 37]});
-
 
 
     Crafty.e("Bird");
@@ -34,6 +36,8 @@ Crafty.scene("Game", function() {
     mountains2.place(gameWidth, gameHeight - ground1.h - mountains1.h + 4);
 
     /*** Scrolled objects END ***/
+
+    Crafty.e("Floor").place(0, 112);
 
     /*** Clouds START ***/
 
