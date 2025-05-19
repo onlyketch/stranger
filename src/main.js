@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     Crafty.viewport.reset();
     Crafty.viewport.scale(Math.floor(scale));
+     
   }
 
   window.addEventListener("resize", scaleGame);

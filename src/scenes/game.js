@@ -2,9 +2,13 @@ import "../components/ground.js";
 import "../components/mountains.js";
 import "../components/floor.js";
 import "../components/cloud.js";
+import "../components/soul.js";
 import "../components/bird.js";
 import "../components/pole.js";
 import "../components/controller.js";
+import "../components/death.js";
+import "../components/score.js";
+
 
 Crafty.scene("Game", function() {
     Crafty.background('#53b2dc');
@@ -12,14 +16,81 @@ Crafty.scene("Game", function() {
 
     const gameHeight = 180;
     const gameWidth = 320;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
     window.gameStart = false;
     window.obstacleGeneration = false;
+    const obsPosXHardArray = [320, 325, 330, 335, 340];
+    const obsPosXMiddleArray = [320, 335, 345, 355];
+    const obsPosXEasyArray = [320, 340, 355, 360, 375];
+    window.gameScore = 0;
+    var obsDelDefault, obsDelMiddle, obsDelHard;
+
+    window.obsGen = function() {
+
+        if (window.gameScore < 10 && !obsDelDefault) {
+            obsDelDefault = Crafty.e("Delay").delay(function() {
+            if (window.obstacleGeneration) {
+                var rndPosX = Crafty.math.randomElementOfArray(obsPosXEasyArray); 
+                Crafty.e("Pole").place(rndPosX, 96);
+            } else {
+                obsDelDefault.cancelDelay();
+                obsDelDefault.destroy();
+            }
+            }, 1200, -1);
+
+        } else if (window.gameScore >= 10 && window.gameScore < 40 && !obsDelMiddle) {
+            if (obsDelDefault) {
+                obsDelDefault.cancelDelay();
+                obsDelDefault.destroy();
+            }
+
+            obsDelMiddle = Crafty.e("Delay").delay(function() {
+            if (window.obstacleGeneration) {
+                var rndPosX = Crafty.math.randomElementOfArray(obsPosXMiddleArray); 
+                Crafty.e("Pole").place(rndPosX, 96);
+            } else {
+                obsDelMiddle.cancelDelay();
+                obsDelMiddle.destroy();
+            }
+            }, 1000, -1);
+
+        } else if (window.gameScore >= 40 && !obsDelHard) {
+            if (obsDelMiddle) {
+                obsDelMiddle.cancelDelay();
+                obsDelMiddle.destroy();
+            }
+
+            obsDelHard = Crafty.e("Delay").delay(function() {
+            if (window.obstacleGeneration) {
+                var rndPosX = Crafty.math.randomElementOfArray(obsPosXHardArray); 
+                Crafty.e("Pole").place(rndPosX, 96); 
+            } else {
+                obsDelHard.cancelDelay();
+                obsDelHard.destroy();
+            }
+            }, 800, -1);
+        }
+
+        
+    }
+
+    window.handleGameStart = function() {
+        if (!window.gameStart) {
+            window.gameStart = true;
+            window.obstacleGeneration = true;
+            window.obsGen();
+        } else {
+            window.gameStart = false;
+            window.obstacleGeneration = false;
+        }
+    }
 
     Crafty.sprite("./assets/ground.png", { ground: [0, 0, 320, 71]});
     Crafty.sprite("./assets/mountains.png", { mountains: [0, 0, 320, 37]});
 
 
-    Crafty.e("Bird");
+    window.bird = Crafty.e("Bird");
 
     /*** Scrolled objects START ***/
 
@@ -59,6 +130,38 @@ Crafty.scene("Game", function() {
     
 
     Crafty.e("Controller");
+
+    var scoreEnt1 = Crafty.e("Score").attr({x: 225});
+    var scoreEnt2 = Crafty.e("Score").attr({x: 248});
+    var scoreEnt3 = Crafty.e("Score").attr({x: 1000});
+
+    const nums = ['num_0', 'num_1', 'num_2', 'num_3', 'num_4', 'num_5', 'num_6', 'num_7', 'num_8', 'num_9'];
+
+
+    window.scoreUpdate = function() {
+        var digits = window.gameScore.toString().split('').map(n => parseInt(n));
+        
+        switch (digits.length) {
+            case 1:
+                scoreEnt2.removeComponent(nums[digits[0] - 1]).addComponent(nums[digits[0]]);
+                break;
+            case 2:
+                scoreEnt1.removeComponent(nums[digits[0] - 1]).addComponent(nums[digits[0]]);
+                scoreEnt2.removeComponent(nums[digits[1] - 1]).addComponent(nums[digits[1]]);
+                break;
+            case 3:
+                scoreEnt3.x = 271;
+                scoreEnt1.removeComponent(nums[digits[0] - 1]).addComponent(nums[digits[0]]);
+                scoreEnt2.removeComponent(nums[digits[1] - 1]).addComponent(nums[digits[1]]);
+                scoreEnt3.removeComponent(nums[digits[2] - 1]).addComponent(nums[digits[2]]);
+                break;
+            default:
+                console.log('error');
+        }
+        
+    }
+
+    window.scoreUpdate();
         
 
 });

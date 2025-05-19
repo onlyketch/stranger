@@ -49,6 +49,22 @@ Crafty.scene("Loading", function() {
                     btn_sound_1: [0, 0],
                     btn_pause: [1, 0]
                 }
+            },
+            "assets/tileset-score.png": {
+                tile: 21,
+                tileh: 29,
+                map: {
+                    num_0: [0, 0],
+                    num_1: [1, 0],
+                    num_2: [2, 0],
+                    num_3: [3, 0],
+                    num_4: [4, 0],
+                    num_5: [5, 0],
+                    num_6: [6, 0],
+                    num_7: [7, 0],
+                    num_8: [8, 0],
+                    num_9: [9, 0]
+                }
             }
         }
     }
