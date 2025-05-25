@@ -5,6 +5,8 @@ import "../components/cloud.js";
 import "../components/soul.js";
 import "../components/bird.js";
 import "../components/pole.js";
+import "../components/leaf.js";
+import "../components/buble.js";
 import "../components/controller.js";
 import "../components/death.js";
 import "../components/score.js";
@@ -23,8 +25,20 @@ Crafty.scene("Game", function() {
     const obsPosXHardArray = [320, 325, 330, 335, 340];
     const obsPosXMiddleArray = [320, 335, 345, 355];
     const obsPosXEasyArray = [320, 340, 355, 360, 375];
-    window.gameScore = 0;
+    window.gameScore = 38;
     var obsDelDefault, obsDelMiddle, obsDelHard;
+    let previousRndInt = 0;
+
+    function newRndint() {
+        var rndInt = Crafty.math.randomInt(1, 5);
+        
+        while (rndInt == previousRndInt) {
+            rndInt = Crafty.math.randomInt(1, 5);
+        }
+
+        previousRndInt = rndInt;
+        return rndInt;
+    }
 
     window.obsGen = function() {
 
@@ -47,8 +61,22 @@ Crafty.scene("Game", function() {
 
             obsDelMiddle = Crafty.e("Delay").delay(function() {
             if (window.obstacleGeneration) {
-                var rndPosX = Crafty.math.randomElementOfArray(obsPosXMiddleArray); 
-                Crafty.e("Pole").place(rndPosX, 96);
+                var rndPosX = Crafty.math.randomElementOfArray(obsPosXMiddleArray);
+                var randInt = newRndint();
+                
+                if (window.gameScore < 20) {
+                    Crafty.e("Pole").place(rndPosX, 96);
+                } else {
+                    if (randInt == 5) {
+                        Crafty.e("Buble").place(rndPosX, 87);
+                    } else {
+                        Crafty.e("Pole").place(rndPosX, 96);
+                    }
+                }
+                
+                if (randInt == 3) {
+                    Crafty.e("Leaf").place(320, -16);
+                } 
             } else {
                 obsDelMiddle.cancelDelay();
                 obsDelMiddle.destroy();
@@ -63,8 +91,17 @@ Crafty.scene("Game", function() {
 
             obsDelHard = Crafty.e("Delay").delay(function() {
             if (window.obstacleGeneration) {
-                var rndPosX = Crafty.math.randomElementOfArray(obsPosXHardArray); 
-                Crafty.e("Pole").place(rndPosX, 96); 
+                var rndPosX = Crafty.math.randomElementOfArray(obsPosXHardArray);
+                var randInt = newRndint();
+
+                Crafty.e("Pole").place(rndPosX, 96);
+                
+                if (randInt == 3) {
+                    Crafty.e("Leaf").place(320, -16);
+                } else if (randInt == 5) {
+                    Crafty.e("Buble").place(rndPosX, 87);
+                } 
+
             } else {
                 obsDelHard.cancelDelay();
                 obsDelHard.destroy();
@@ -91,6 +128,7 @@ Crafty.scene("Game", function() {
 
 
     window.bird = Crafty.e("Bird");
+
 
     /*** Scrolled objects START ***/
 
@@ -140,7 +178,7 @@ Crafty.scene("Game", function() {
 
     window.scoreUpdate = function() {
         var digits = window.gameScore.toString().split('').map(n => parseInt(n));
-        
+
         switch (digits.length) {
             case 1:
                 scoreEnt2.removeComponent(nums[digits[0] - 1]).addComponent(nums[digits[0]]);
