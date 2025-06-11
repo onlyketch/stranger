@@ -7,8 +7,8 @@ Crafty.c("Soul", {
         this.z = 18;
 
         this.bind("EnterFrame", function() {
-            this.y = Math.round(this.y - 1);
-            this.x = Math.round(this.x + 1);
+            this.y = Math.floor(this.y - 1);
+            this.x = Math.floor(this.x + 1);
 
             if (this.y < -16) {
                 this.destroy();

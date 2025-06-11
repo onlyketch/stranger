@@ -25,7 +25,7 @@ Crafty.scene("Game", function() {
     const obsPosXHardArray = [320, 325, 330, 335, 340];
     const obsPosXMiddleArray = [320, 335, 345, 355];
     const obsPosXEasyArray = [320, 340, 355, 360, 375];
-    window.gameScore = 38;
+    window.gameScore = 0;
     var obsDelDefault, obsDelMiddle, obsDelHard;
     let previousRndInt = 0;
 
