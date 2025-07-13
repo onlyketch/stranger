@@ -1,7 +1,7 @@
 Crafty.c("Bird", {
 
     init: function() {
-        this.addComponent("2D, WebGL, Delay, SpriteAnimation, Collision, Gravity, Jumper, Keyboard, bird");
+        this.addComponent("2D, WebGL, SpriteAnimation, Collision, Gravity, Jumper, Keyboard, bird");
         this.x = 90;
         this.y = 96;
         this.z = 20;
@@ -17,7 +17,6 @@ Crafty.c("Bird", {
         this.collision([1, 14, 13, 14, 13, 1, 1, 1]);
         this.checkHits('Obstacle');
         this.bind("HitOn", function(hitData) {
-            window.removeEventListener('touchstart', window.handleGameStart);
             window.gameStart = false;
             window.obstacleGeneration = false;
 
@@ -28,8 +27,7 @@ Crafty.c("Bird", {
             Crafty.e("Death").attr({x: this.x, y: this.y});
             Crafty.e("Soul").place(this.x, this.y);
 
-
-
+            window.showGameOverBox();
             this.destroy();
         });
         

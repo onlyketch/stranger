@@ -1,16 +1,37 @@
 Crafty.scene("Loading", function() {
-    Crafty.background('#1c1c1c');
+    const gameWidth = 640;
+    const gameHeight = 360;
+    const gameXCenter = gameWidth / 2;
+    const gameYCenter = gameHeight / 2;
+        
+    Crafty.background('#382f2a');
+    Crafty.viewport.scale(2);
 
-    Crafty.e("2D, DOM, Text")
-    .attr({ x: 10, y: 10 })
-    .text("Загрузка...")
-    .textColor("#ffffff")
-    .textFont({ size: "24px", weight: "bold" });
+    var loadBar = Crafty.e("2D, WebGL, Color")
+        .attr({w: 200, h: 4})
+        .color('#302924');
+    loadBar.x = gameXCenter/2 - loadBar.w/2;
+    loadBar.y = gameYCenter/2 - loadBar.h/2;
 
+    var loadFill = Crafty.e("2D, WebGL, Color")
+        .attr({x: loadBar.x, y: loadBar.y, w: 0, h: 4})
+        .color('#fff6dc');
+    
+
+    
     let assetsObj = {
         images: [
             "assets/ground.png",
-            "assets/mountains.png"
+            "assets/mountains.png",
+            "assets/gm-box.png",
+            "assets/m_title.png",
+            "assets/m_play.png",
+            "assets/m_records.png",
+            "assets/m_table.png",
+            "assets/m_cloud.png",
+            "assets/m_round.png",
+            "assets/m_help.png",
+            "assets/m_sound.png"
         ],
         sprites: {
             "assets/strange-tileset2.png": {
@@ -65,15 +86,81 @@ Crafty.scene("Loading", function() {
                     num_8: [8, 0],
                     num_9: [9, 0]
                 }
+            },
+            "assets/tileset-gm-score.png": {
+                tile: 15,
+                tileh: 21,
+                map: {
+                    dig_0: [0, 0],
+                    dig_1: [1, 0],
+                    dig_2: [2, 0],
+                    dig_3: [3, 0],
+                    dig_4: [4, 0],
+                    dig_5: [5, 0],
+                    dig_6: [6, 0],
+                    dig_7: [7, 0],
+                    dig_8: [8, 0],
+                    dig_9: [9, 0]
+                }
+            },
+            "assets/tileset-gm-old-score.png": {
+                tile: 9,
+                tileh: 14,
+                map: {
+                    sdig_0: [0, 0],
+                    sdig_1: [1, 0],
+                    sdig_2: [2, 0],
+                    sdig_3: [3, 0],
+                    sdig_4: [4, 0],
+                    sdig_5: [5, 0],
+                    sdig_6: [6, 0],
+                    sdig_7: [7, 0],
+                    sdig_8: [8, 0],
+                    sdig_9: [9, 0]
+                }
+            },
+            "assets/medals.png": {
+                tile: 16,
+                tileh: 16,
+                map: {
+                    medal_0: [0, 0],
+                    medal_1: [1, 0],
+                    medal_1: [2, 0],
+                    medal_1: [3, 0]
+                }
+            },
+            "assets/gm-buttons.png": {
+                tile: 40,
+                tileh: 24,
+                map: {
+                    gm_home: [0, 0],
+                    gm_play: [1, 0],
+                    gm_liders: [2, 0]
+                }
+            },
+            "assets/new-record.png": {
+                tile: 33,
+                tileh: 16,
+                map: {
+                    newrec: [0, 0]
+                }
             }
         }
     }
 
-    Crafty.load(assetsObj, function() {
-        Crafty.e("Delay").delay(function() {
-            Crafty.enterScene("Game");
-        }, 2000, 0);
-        
-    });
+    Crafty.load(assetsObj, 
+        function() {
+            Crafty.e("Delay").delay(function() {
+                Crafty.enterScene("Title");
+            }, 400, 0);
+        },
+        function(e) {
+            loadFill.w = (e.loaded / e.total * 100)*2;
+
+        },
+        function(e) {
+            Crafty.log(e);
+        }
+    );
 
 })

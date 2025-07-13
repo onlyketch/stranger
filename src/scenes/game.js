@@ -10,22 +10,23 @@ import "../components/buble.js";
 import "../components/controller.js";
 import "../components/death.js";
 import "../components/score.js";
+import "../components/gm-box.js";
+import "../components/medal.js";
 
 
 Crafty.scene("Game", function() {
     Crafty.background('#53b2dc');
-    Crafty.pixelart(true);
-
-    const gameHeight = 180;
-    const gameWidth = 320;
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
+    Crafty.viewport.scale(2);
+    let gameHeight = 180;
+    let gameWidth = 320;
     window.gameStart = false;
     window.obstacleGeneration = false;
     const obsPosXHardArray = [320, 325, 330, 335, 340];
     const obsPosXMiddleArray = [320, 335, 345, 355];
     const obsPosXEasyArray = [320, 340, 355, 360, 375];
     window.gameScore = 0;
+    Crafty.bestScore = 0;
+    let newRecord = false;
     var obsDelDefault, obsDelMiddle, obsDelHard;
     let previousRndInt = 0;
 
@@ -41,7 +42,6 @@ Crafty.scene("Game", function() {
     }
 
     window.obsGen = function() {
-
         if (window.gameScore < 10 && !obsDelDefault) {
             obsDelDefault = Crafty.e("Delay").delay(function() {
             if (window.obstacleGeneration) {
@@ -123,17 +123,128 @@ Crafty.scene("Game", function() {
         }
     }
 
+    window.showGameOverBox = function() {
+        const digits = ['dig_0', 'dig_1', 'dig_2', 'dig_3', 'dig_4', 'dig_5', 'dig_6', 'dig_7', 'dig_8', 'dig_9'];
+        const sdigits = ['sdig_0', 'sdig_1', 'sdig_2', 'sdig_3', 'sdig_4', 'sdig_5', 'sdig_6', 'sdig_7', 'sdig_8', 'sdig_9'];
+
+        let currentBest = localStorage.getItem('bestScore');
+        let newScore = window.gameScore;
+
+        if (!currentBest || newScore > currentBest) {
+            if (currentBest) newRecord = true;
+            localStorage.setItem('bestScore', newScore);
+            Crafty.bestScore = newScore;
+        }
+
+        var gm_box = Crafty.e("GMBox");
+        var medal_1 = Crafty.e("Medal, 2D").attr({x: gm_box.x + 50, y: gm_box.y + 28});
+        var medal_2 = Crafty.e("Medal, 2D").attr({x: gm_box.x + 72, y: gm_box.y + 28});
+        var medal_3 = Crafty.e("Medal, 2D").attr({x: gm_box.x + 94, y: gm_box.y + 28});
+        var medals = [medal_1, medal_2, medal_3];
+
+        function getStars(score, bestScore) {
+            if (!bestScore) return 3;
+            const percent = Math.round((score / bestScore) * 100);
+
+            if (percent >= 100) return 3;
+            if (percent >= 70) return 2;
+            if (percent >= 50) return 1;
+            return 0; 
+        }
+
+        let rate = getStars(newScore, currentBest);
+
+        var medalShow = function() {
+            let i = 0;
+            if (rate > 0) {
+                Crafty.e("Delay").delay(function() {
+                    Crafty.e("Delay").delay(function() {
+                        medals[i].animate("flash", 1);
+                        i++;
+                    }, 500, rate - 1);
+                }, 2400, 0);
+            }
+        }
+
+        medalShow();
+        
+        var gm_home_btn = Crafty.e("2D, WebGL, gm_home").attr({x: gm_box.x + 16, y: gm_box.y + 83, z: 120});
+        var gm_play_btn = Crafty.e("2D, WebGL, Mouse, Color, gm_play")
+            .attr({x: gm_box.x + 60, y: gm_box.y + 83, w: 40, h: 24, z: 120})
+            .bind("Click", function() {
+                Crafty.enterScene("Game");
+            });
+        var gm_liders_btn = Crafty.e("2D, WebGL, gm_liders").attr({x: gm_box.x + 104, y: gm_box.y + 83, z: 120});
+
+        if (newRecord) {
+            var record = Crafty.e("2D, WebGL, SpriteAnimation, newrec").attr({x: gm_box.x + 108, y: gm_box.y + 52, z: 120});
+            gm_box.attach(record);
+            record.reel("shine", 400, [[0, 0], [1, 0], [2, 0], [3, 0]]).animate("shine", -1);
+            var oldScore = String(currentBest).split('');
+            switch (oldScore.length) {
+                case 1:
+                    var gm_oldScoreNum1 = Crafty.e("2D, WebGL, " + sdigits[0]).attr({x: gm_box.x + 31, y: gm_box.y + 53, z: 120});
+                    var gm_oldScoreNum2 = Crafty.e("2D, WebGL, " + sdigits[Number(oldScore[0])]).attr({x: gm_box.x + 42, y: gm_box.y + 53, z: 120});
+                    gm_box.attach(gm_oldScoreNum1, gm_oldScoreNum2);
+                    break;
+                case 2:
+                    var gm_oldScoreNum1 = Crafty.e("2D, WebGL, " + sdigits[Number(oldScore[0])]).attr({x: gm_box.x + 31, y: gm_box.y + 53, z: 120});
+                    var gm_oldScoreNum2 = Crafty.e("2D, WebGL, " + sdigits[Number(oldScore[1])]).attr({x: gm_box.x + 42, y: gm_box.y + 53, z: 120});
+                    gm_box.attach(gm_oldScoreNum1, gm_oldScoreNum2);
+                    break;
+                case 3:
+                    var gm_oldScoreNum1 = Crafty.e("2D, WebGL, " + sdigits[Number(oldScore[0])]).attr({x: gm_box.x + 20, y: gm_box.y + 53, z: 120});
+                    var gm_oldScoreNum2 = Crafty.e("2D, WebGL, " + sdigits[Number(oldScore[1])]).attr({x: gm_box.x + 31, y: gm_box.y + 53, z: 120});
+                    var gm_oldScoreNum3 = Crafty.e("2D, WebGL, " + sdigits[Number(oldScore[2])]).attr({x: gm_box.x + 42, y: gm_box.y + 53, z: 120});
+                    gm_box.attach(gm_oldScoreNum1, gm_oldScoreNum2, gm_oldScoreNum3);
+                    break;
+            }
+        } 
+        
+        var finalScore = String(window.gameScore).split('');
+        switch(finalScore.length) {
+            case 1:
+                var gm_scoreNum1 = Crafty.e("2D, WebGL, " + digits[0]).attr({x: gm_box.x + 64, y: gm_box.y + 51, z: 120});
+                var gm_scoreNum2 = Crafty.e("2D, WebGL, " + digits[Number(finalScore[0])]).attr({x: gm_box.x + 81, y: gm_box.y + 51, z: 120});
+                gm_box.attach(medal_1, medal_2, medal_3, gm_home_btn, gm_play_btn, gm_liders_btn, gm_scoreNum1, gm_scoreNum2);
+                break;
+            case 2:
+                var gm_scoreNum1 = Crafty.e("2D, WebGL, " + digits[Number(finalScore[0])]).attr({x: gm_box.x + 64, y: gm_box.y + 51, z: 120});
+                var gm_scoreNum2 = Crafty.e("2D, WebGL, " + digits[Number(finalScore[1])]).attr({x: gm_box.x + 81, y: gm_box.y + 51, z: 120});
+                gm_box.attach(medal_1, medal_2, medal_3, gm_home_btn, gm_play_btn, gm_liders_btn, gm_scoreNum1, gm_scoreNum2);
+                break;
+            case 3:
+                var gm_scoreNum1 = Crafty.e("2D, WebGL, " + digits[Number(finalScore[0])]).attr({x: gm_box.x + 55, y: gm_box.y + 51, z: 120});
+                var gm_scoreNum2 = Crafty.e("2D, WebGL, " + digits[Number(finalScore[1])]).attr({x: gm_box.x + 72, y: gm_box.y + 51, z: 120});
+                var gm_scoreNum3 = Crafty.e("2D, WebGL, " + digits[Number(finalScore[2])]).attr({x: gm_box.x + 89, y: gm_box.y + 51, z: 120});
+                gm_box.attach(medal_1, medal_2, medal_3, gm_home_btn, gm_play_btn, gm_liders_btn, gm_scoreNum1, gm_scoreNum2, gm_scoreNum3)
+        }        
+    }
+
+    window.restartGame = function() {
+        window.gameStart = false;
+        window.obstacleGeneration = false;
+
+        Crafty.e("Delay").delay(function() {
+            Crafty.enterScene("Game");
+        }, 30);
+    }
+
+    /*** Sprite Images Start ***/
+
     Crafty.sprite("./assets/ground.png", { ground: [0, 0, 320, 71]});
     Crafty.sprite("./assets/mountains.png", { mountains: [0, 0, 320, 37]});
+    Crafty.sprite("./assets/gm-box.png", { gmbox: [0, 0, 160, 119]});
+
+    /*** Sprite Images End ***/
 
 
     window.bird = Crafty.e("Bird");
 
-
     /*** Scrolled objects START ***/
 
     const ground1 = Crafty.e("Ground");
-    ground1.place(0, gameHeight - ground1.h);
+    ground1.place(0, gameHeight - (ground1.h));
 
     const ground2 = Crafty.e("Ground");
     ground2.place(gameWidth, gameHeight - ground2.h);
@@ -164,8 +275,6 @@ Crafty.scene("Game", function() {
     
 
     /*** Clouds END ***/
-
-    
 
     Crafty.e("Controller");
 
@@ -201,5 +310,4 @@ Crafty.scene("Game", function() {
 
     window.scoreUpdate();
         
-
 });
